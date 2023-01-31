@@ -26,14 +26,13 @@ LIMIT 10;
 
 SELECT COUNT(location) AS tn_postings
 FROM data_analyst_jobs
-WHERE location LIKE 'TN';
+WHERE location = 'TN';
 
 -- Answer: 21 postings in Tennessee
 
 SELECT COUNT(location) AS tn_or_ky_postings
 FROM data_analyst_jobs
-WHERE location LIKE 'TN'
-	OR location LIKE 'KY';
+WHERE location IN ('TN', 'KY');
 	
 -- Answer: 27 postings in either Tennessee or Kentucky
 
@@ -42,7 +41,7 @@ WHERE location LIKE 'TN'
 
 SELECT COUNT(location) AS tn_postings_with_star_ratings_above_4
 FROM data_analyst_jobs
-WHERE location LIKE 'TN'
+WHERE location = 'TN'
 	AND star_rating > 4;
 	
 -- Answer: 3 postings in Tennessee with star ratings above 4.
@@ -127,7 +126,7 @@ FROM data_analyst_jobs;
 
 SELECT COUNT (DISTINCT title) AS unique_job_titles_for_california_companies
 FROM data_analyst_jobs
-WHERE location LIKE 'CA';
+WHERE location = 'CA';
 
 -- Answer: 230 unique job titles for California companies
 
@@ -199,7 +198,7 @@ ORDER BY total_review_count DESC;
 
 -- 10.	Add the code to order the query in #9 from highest to lowest average star rating. Which company with more than 5000 reviews across all locations in the dataset has the highest star rating? What is that rating?
 
--- Comment: Oops, already did the code for question 10 in question 9, plus did the round off to 2 decimal places for the average start rating.
+-- Comment: Already did the code for question 10 in question 9, plus the rounding to 2 decimal places for the average start rating.
 
 SELECT company, ROUND(AVG(star_rating),2) AS avg_star_rating, SUM(review_count) AS total_review_count
 FROM data_analyst_jobs
@@ -215,40 +214,22 @@ ORDER BY avg_star_rating DESC;
 
 SELECT COUNT(DISTINCT(title)) AS job_titles_containing_the_word_analyst
 FROM data_analyst_jobs
-WHERE title LIKE '%NALYST%';
+WHERE title LIKE '%NALYST%'
+	OR title LIKE '%nalyst%';
 
--- Answer: 757 different job titles
+-- Answer: 774 different job titles
 
 
 -- 12.	How many different job titles do not contain either the word ‘Analyst’ or the word ‘Analytics’? What word do these positions have in common?
 
--- Extra: How many distinct job titles are there?
-
-SELECT DISTINCT(title) 
-FROM data_analyst_jobs;
-
--- Answer: 881 distinct job titles
--- 881 - 757 = 124
-
--- Extra: How many distinct job titles with the word 'Analytics'?
-
-SELECT COUNT(DISTINCT(title)) AS job_titles_containing_the_word_analytics
+SELECT COUNT(DISTINCT(title)) AS job_titles_not_containing_analyst_or_analytics
 FROM data_analyst_jobs
-WHERE title LIKE '%nalytics%';
+WHERE title NOT LIKE '%NALYST%'
+	AND title NOT LIKE '%nalyst%'
+	AND title NOT LIKE '%NALYTICS%'
+	AND title NOT LIKE '%nalytics%';
 
--- Answer: 181 
--- So, some titles contain both words analyst and analytics.
-
-
-SELECT DISTINCT(title) AS job_titles_not_containing_analyst_or_analytics
-FROM data_analyst_jobs
-WHERE title NOT LIKE '%nalyst%'
-	OR title NOT LIKE '%nalytics%'
-
-
-
-
-
+--Answer: 4 job titles do not contain either the word ‘Analyst’ or the word ‘Analytics’.  Those 4 job titles have the word 'data' in common.
 
 
 -- **BONUS:**
@@ -256,3 +237,18 @@ WHERE title NOT LIKE '%nalyst%'
 --  - Disregard any postings where the domain is NULL. 
 --  - Order your results so that the domain with the greatest number of `hard to fill` jobs is at the top. 
 --  - Which three industries are in the top 4 on this list? How many jobs have been listed for more than 3 weeks for each of the top 4?
+
+SELECT domain, COUNT(title) AS number_of_jobs_requiring_SQL_posted_longer_than_3_weeks
+FROM data_analyst_jobs
+WHERE skill LIKE '%SQL%'
+	AND days_since_posting > 21
+	AND domain IS NOT null
+GROUP BY domain
+ORDER by number_of_jobs_requiring_SQL_posted_longer_than_3_weeks DESC;
+
+-- Answer: 
+-- Industries							# of jobs listed for more than 3 weeks
+-- "Internet and Software"				62
+-- "Banks and Financial Services"		61
+-- "Consulting and Business Services"	57
+-- "Health Care"						52
