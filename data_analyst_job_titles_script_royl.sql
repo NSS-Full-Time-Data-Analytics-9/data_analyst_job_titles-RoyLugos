@@ -60,59 +60,60 @@ WHERE review_count BETWEEN 500 AND 1000;
 
 SELECT location AS state, AVG(star_rating) AS avg_rating
 FROM data_analyst_jobs
-WHERE location IS NOT NULL
-	AND star_rating IS NOT NULL
 GROUP BY location
-ORDER BY avg_rating DESC;
+ORDER BY avg_rating DESC NULLS LAST;
 
--- Answer: see table below.  Nebraska shows the highest average rating.
--- "NE"		4.1999998090000000
--- "RI"		4.1499998570000000
--- "KS"		4.0999999050000000
--- "UT"		4.0647057644117647
--- "ID"		4.0000000000000000
--- "LA"		4.0000000000000000
--- "DE"		3.9500000475000000
--- "NH"		3.9499999285000000
--- "WA"		3.9441860110232558
--- "MA"		3.8932432129459459
--- "CA"		3.8787233887386018
--- "NY"		3.8646464540202020
--- "IN"		3.8500000106111111
--- "DC"		3.8333333576666667
--- "VA"		3.8295774694225352
--- "TN"		3.8277777831111111
--- "SC"		3.8214285541428571
--- "CT"		3.8178571376785714
--- "OR"		3.8176470224117647
--- "NC"		3.8071428195714286
--- "AR"		3.7999999522857143
--- "AL"		3.7500000000000000
--- "GA"		3.7439999818600000
--- "NV"		3.7428571494285714
--- "MI"		3.7406249716562500
--- "CO"		3.7285714036190476
--- "IL"		3.7219999885200000
--- "WI"		3.7181818268181818
--- "TX"		3.7135922445631068
--- "OK"		3.7000000480000000
+-- Answer: see table below.  Nebraska shows the highest average rating of 4.20.
+-- "NE"	4.1999998090000000
+-- "RI"	4.1499998570000000
+-- "KS"	4.0999999050000000
+-- "UT"	4.0647057644117647
+-- "LA"	4.0000000000000000
+-- "ID"	4.0000000000000000
+-- "DE"	3.9500000475000000
+-- "NH"	3.9499999285000000
+-- "WA"	3.9441860110232558
+-- "MA"	3.8932432129459459
+-- "CA"	3.8787233887386018
+-- "NY"	3.8646464540202020
+-- "IN"	3.8500000106111111
+-- "DC"	3.8333333576666667
+-- "VA"	3.8295774694225352
+-- "TN"	3.8277777831111111
+-- "SC"	3.8214285541428571
+-- "CT"	3.8178571376785714
+-- "OR"	3.8176470224117647
+-- "NC"	3.8071428195714286
+-- "AR"	3.7999999522857143
+-- "AL"	3.7500000000000000
+-- "GA"	3.7439999818600000
+-- "NV"	3.7428571494285714
+-- "MI"	3.7406249716562500
+-- "CO"	3.7285714036190476
+-- "IL"	3.7219999885200000
+-- "WI"	3.7181818268181818
+-- "TX"	3.7135922445631068
+-- "OK"	3.7000000480000000
 -- "REMOTE"	3.6999999680000000
--- "PA"		3.6959999751800000
--- "FL"		3.6923076678205128
--- "MO"		3.6677418984516129
--- "IA"		3.6666666136666667
--- "MD"		3.6400000148000000
--- "OH"		3.5903225790000000
--- "KY"		3.5799999716000000
--- "NJ"		3.5725490204509804
--- "AZ"		3.5714285543571429
--- "MN"		3.5681818181818182
+-- "PA"	3.6959999751800000
+-- "FL"	3.6923076678205128
+-- "MO"	3.6677418984516129
+-- "IA"	3.6666666136666667
+-- "MD"	3.6400000148000000
+-- "OH"	3.5903225790000000
+-- "KY"	3.5799999716000000
+-- "NJ"	3.5725490204509804
+-- "AZ"	3.5714285543571429
+-- "MN"	3.5681818181818182
 -- "USA"	3.5611111057777778
--- "NM"		3.5000000000000000
--- "ME"		3.4999999998000000
--- "HI"		3.4000000950000000
--- "WV"		3.4000000950000000
-
+-- "NM"	3.5000000000000000
+-- "ME"	3.4999999998000000
+-- "WV"	3.4000000950000000
+-- "HI"	3.4000000950000000
+-- "SD"	
+-- "VT"	
+-- "WY"	
+	
 
 -- 7.	Select unique job titles from the data_analyst_jobs table. How many are there?
 
@@ -207,29 +208,33 @@ WHERE review_count > 5000
 GROUP BY company
 ORDER BY avg_star_rating DESC;
 
--- Answer: Unilever had the highest star rating of 4.20.
+-- Answer: 6 companies tied for the highest star rating of 4.20.
+-- Company				Star Rating		Reviews
+-- "Unilever"			4.20			5416
+-- "General Motors"		4.20			6241
+-- "Nike"				4.20			13148
+-- "American Express"	4.20			18111
+-- "Microsoft"			4.20			31068
+-- "Kaiser Permanente"	4.20			122460
 
 
 -- 11.	Find all the job titles that contain the word ‘Analyst’. How many different job titles are there? 
 
 SELECT COUNT(DISTINCT(title)) AS job_titles_containing_the_word_analyst
 FROM data_analyst_jobs
-WHERE title LIKE '%NALYST%'
-	OR title LIKE '%nalyst%';
+WHERE title ILIKE '%analyst%';
 
 -- Answer: 774 different job titles
 
 
 -- 12.	How many different job titles do not contain either the word ‘Analyst’ or the word ‘Analytics’? What word do these positions have in common?
 
-SELECT COUNT(DISTINCT(title)) AS job_titles_not_containing_analyst_or_analytics
+SELECT DISTINCT(title) AS job_titles_not_containing_analyst_or_analytics
 FROM data_analyst_jobs
-WHERE title NOT LIKE '%NALYST%'
-	AND title NOT LIKE '%nalyst%'
-	AND title NOT LIKE '%NALYTICS%'
-	AND title NOT LIKE '%nalytics%';
+WHERE title NOT ILIKE '%analyst%'
+	AND title NOT ILIKE '%analytics%';
 
---Answer: 4 job titles do not contain either the word ‘Analyst’ or the word ‘Analytics’.  Those 4 job titles have the word 'data' in common.
+--Answer: 4 job titles do not contain either the word ‘Analyst’ or the word ‘Analytics’.  Those 4 job titles have the word 'Tableau' in common.
 
 
 -- **BONUS:**
@@ -240,7 +245,7 @@ WHERE title NOT LIKE '%NALYST%'
 
 SELECT domain, COUNT(title) AS number_of_jobs_requiring_SQL_posted_longer_than_3_weeks
 FROM data_analyst_jobs
-WHERE skill LIKE '%SQL%'
+WHERE skill ILIKE '%SQL%'
 	AND days_since_posting > 21
 	AND domain IS NOT null
 GROUP BY domain
